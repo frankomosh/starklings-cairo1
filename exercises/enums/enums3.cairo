@@ -2,12 +2,14 @@
 // Address all the TODOs to make the tests pass!
 // Execute `starklings hint enums3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 use debug::PrintTrait;
 
 #[derive(Drop, Copy)]
 enum Message { // TODO: implement the message variant types based on their usage below
+    ChangeColor: (u8, u8, u8),
+    Echo: felt252,
+    Move: Point,
+    Quit,
 }
 
 #[derive(Drop, Copy)]
@@ -52,6 +54,13 @@ impl StateImpl of StateTrait {
     fn process(
         ref self: State, message: Message
     ) { // TODO: create a match expression to process the different message variants
+    // Remember: When passing a tuple as a function argument, you'll need extra parentheses: fn function((t, u, p, l, e))
+        match message {
+            Message::ChangeColor(color) => self.change_color(color),
+            Message::Echo(msg) => self.echo(msg),
+            Message:: Move(point) => self.move_position(point),
+            Message::Quit => self.quit(),
+        }
     }
 }
 
@@ -62,10 +71,24 @@ fn test_match_message_call() {
     state.process(Message::ChangeColor((255, 0, 255)));
     state.process(Message::Echo('hello world'));
     state.process(Message::Move(Point { x: 10, y: 15 }));
-    state.process(Message::Quit(()));
+    state.process(Message::Quit);
 
     assert(state.color == (255, 0, 255), 'wrong color');
     assert(state.position.x == 10, 'wrong x position');
     assert(state.position.y == 15, 'wrong y position');
     assert(state.quit == true, 'quit should be true');
 }
+
+
+// impl TripleTuplePartialEq of PartialEq<(u8, u8, u8)> {
+//     #[inline(always)]
+//     fn eq(lhs: (u8, u8, u8), rhs: (u8, u8, u8)) -> bool {
+//         let (a0, a1, a2) = lhs;
+//         let (b0, b1, b2) = rhs;
+//         a0 == b0 & a1 == b1 & a2 == b2
+//     }
+//     #[inline(always)]
+//     fn ne(lhs: (u8, u8, u8), rhs: (u8, u8, u8)) -> bool {
+//         !(lhs == rhs)
+//     }
+// }
